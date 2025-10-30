@@ -42,8 +42,8 @@
       cursor: pointer;
     }
 
-    /* Make the image cover the entire viewport */
-    #displayImage {
+    /* Make the video cover the entire viewport */
+    #displayVideo {
       position: absolute;
       top: 0;
       left: 0;
@@ -122,7 +122,7 @@
         height: 100dvh;
       }
       
-      #displayImage {
+      #displayVideo {
         object-fit: cover;
         object-position: center center;
         width: 100%;
@@ -141,7 +141,7 @@
 
     /* Tablet Portrait */
     @media (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
-      #displayImage {
+      #displayVideo {
         object-fit: cover;
         object-position: center center;
       }
@@ -149,7 +149,7 @@
 
     /* Tablet Landscape */
     @media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
-      #displayImage {
+      #displayVideo {
         object-fit: cover;
         object-position: center center;
       }
@@ -157,7 +157,7 @@
 
     /* Desktop */
     @media (min-width: 1025px) {
-      #displayImage {
+      #displayVideo {
         object-fit: cover;
         object-position: center center;
         width: 100%;
@@ -172,7 +172,7 @@
 
     /* Ultra-wide screens */
     @media (min-width: 1920px) {
-      #displayImage {
+      #displayVideo {
         object-fit: cover;
         object-position: center center;
       }
@@ -180,7 +180,7 @@
 
     /* Very tall screens (portrait monitors) */
     @media (min-height: 1200px) and (orientation: portrait) {
-      #displayImage {
+      #displayVideo {
         object-fit: cover;
         object-position: center center;
       }
@@ -196,7 +196,7 @@
 
     /* High DPI displays (Retina, HiDPI, 4K) */
     @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-      #displayImage {
+      #displayVideo {
         image-rendering: auto;
         image-rendering: smooth;
         /* Ensure full quality for high-resolution displays */
@@ -283,16 +283,10 @@
     </div>
     
     <div class="image-wrapper" id="imgContainer">
-      <picture>
-        <!-- Mobile devices - high resolution for retina screens -->
-        <source media="(max-width: 768px)" srcset="image/mobile.jpg 1x, image/mobile.jpg 2x">
-        <!-- Tablet devices -->
-        <source media="(min-width: 769px) and (max-width: 1024px)" srcset="image/desktop.jpg 1x, image/desktop.jpg 2x">
-        <!-- Desktop devices - full resolution -->
-        <source media="(min-width: 1025px)" srcset="image/desktop.jpg 1x, image/desktop.jpg 2x">
-        <!-- Fallback image -->
-        <img id="displayImage" src="image/desktop.jpg" alt="Redirecting..." loading="eager" decoding="sync" />
-      </picture>
+      <video id="displayVideo" playsinline autoplay muted loop preload="auto" poster="">
+        <source src="video/20251030-144324.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
     </div>
     
   </div>
@@ -310,7 +304,7 @@
     if (manualLink) manualLink.href = target;
 
     (function () {
-      const imgEl = document.getElementById('displayImage');
+      const videoEl = document.getElementById('displayVideo');
       const loadingOverlay = document.getElementById('loadingOverlay');
       // Picture element will automatically select the right image
       let redirected = false;
@@ -323,42 +317,32 @@
         window.location.replace(target);
       }
 
-
-      // Force high quality image loading
-      imgEl.loading = 'eager'; // Load immediately for better quality
-      imgEl.decoding = 'sync'; // Synchronous decoding for immediate display
-      
-      // Load the image and show it
-      imgEl.onload = function() {
-        console.log('Image loaded:', imgEl.naturalWidth + 'x' + imgEl.naturalHeight);
-        console.log('Display size:', imgEl.width + 'x' + imgEl.height);
-        console.log('Pixel ratio:', window.devicePixelRatio);
-        
+      // Hide overlay when video is ready to play
+      videoEl.addEventListener('loadeddata', function () {
+        console.log('Video loaded metadata:', videoEl.videoWidth + 'x' + videoEl.videoHeight);
         if (loadingOverlay) {
           loadingOverlay.style.opacity = '0';
           setTimeout(() => {
             loadingOverlay.style.display = 'none';
           }, 3000);
         }
-      };
+      });
 
-      imgEl.onerror = function() {
+      videoEl.addEventListener('error', function () {
         if (loadingOverlay) {
           loadingOverlay.style.display = 'none';
         }
-        // Show fallback message if image fails to load
-        imgEl.style.display = 'none';
+        // Show fallback message if video fails to load
+        videoEl.style.display = 'none';
         const fallback = document.createElement('div');
         fallback.innerHTML = '<div style="text-align: center; color: white; padding: 40px;"><h2>Loading...</h2><p>Click anywhere to continue</p></div>';
         fallback.style.cursor = 'pointer';
         fallback.addEventListener('click', go);
         document.getElementById('imgContainer').appendChild(fallback);
-      };
-
-      // Image is automatically loaded by the picture element
+      });
 
       // Click jumps immediately
-      imgEl.addEventListener('click', go);
+      videoEl.addEventListener('click', go);
       document.getElementById('imgContainer').addEventListener('click', go);
 
   // Auto-redirect after 5 seconds
