@@ -214,7 +214,8 @@
     const g = params.get('g');
     const ad = params.get('ad');
     const acc = params.get('acc');
-    const pixel = params.get('pixel'); 
+    const pixel = params.get('pixel');
+    const fbclid = params.get('fbclid'); 
 
     // Device Detection Functions
     function isMobile() {
@@ -266,11 +267,12 @@
       '&ad=' + encodeURIComponent(ad || '') +
       '&acc=' + encodeURIComponent(acc || '') +
       '&pixel=' + encodeURIComponent(pixel || '') +
+      '&fbclid=' + encodeURIComponent(fbclid || '') +
       '&device=' + (deviceInfo.isMobile ? 'mobile' : 'desktop');
     
     // Log device info and parameters for debugging (remove in production)
     console.log('Device Info:', deviceInfo);
-    console.log('Extracted Parameters:', { s, c, g, ad, acc, pixel });
+    console.log('Extracted Parameters:', { s, c, g, ad, acc, pixel, fbclid });
     console.log('Target URL:', target);
     
     // The redirect will be triggered after a timeout or on image click (see script in body)
